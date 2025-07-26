@@ -1,14 +1,216 @@
-﻿<Window x:Class="SerialPortAssist.Views.MainWindow"
-        xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:SerialPortAssist.ViewModels"
-        Title="串口助手"
-        d:DesignWidth="800"
-        d:DesignHeight="450"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        mc:Ignorable="d">
-  <TextBlock Text="Hello World" />
-</Window>
+<u:UrsaWindow x:Class="SerialPortAssist.Views.MainWindow"
+              xmlns="https://github.com/avaloniaui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:u="https://irihi.tech/ursa"
+              xmlns:vm="using:SerialPortAssist.ViewModels"
+              Title="串口助手"
+              MinHeight="730"
+              Padding="10,40,10,10"
+              d:DesignWidth="1200"
+              d:DesignHeight="800"
+              x:DataType="vm:MainWindowViewModel"
+              RequestedThemeVariant="Default"
+              Icon="/Assets/avalonia-logo.ico"
+              mc:Ignorable="d">
+
+  <u:UrsaWindow.Styles>
+    <Style Selector="HeaderedContentControl /template/ ContentPresenter#PART_HeaderPresenter">
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+  </u:UrsaWindow.Styles>
+
+  <u:UrsaWindow.LeftContent>
+    <StackPanel Margin="5,5,0,0" Orientation="Horizontal">
+      <Image Width="18" Source="/Assets/avalonia-logo.ico" />
+      <TextBlock Margin="5,0,0,0"
+                 VerticalAlignment="Center"
+                 FontSize="14"
+                 FontWeight="Bold"
+                 Text="{Binding $parent[u:UrsaWindow].Title}" />
+    </StackPanel>
+  </u:UrsaWindow.LeftContent>
+
+  <u:UrsaWindow.RightContent>
+    <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+      <u:IconButton Classes="Tertiary"
+                    Click="OpenRepository"
+                    Icon="{StaticResource SemiIconGithubLogo}"
+                    Theme="{StaticResource BorderlessIconButton}"
+                    ToolTip.Tip="打开项目" />
+      <u:ThemeToggleButton IsThreeState="True" />
+    </StackPanel>
+  </u:UrsaWindow.RightContent>
+
+  <Grid RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,*">
+    <!-- 串口配置 -->
+    <HeaderedContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="0">
+      <HeaderedContentControl.Header>
+        <TextBlock Text="串口配置" FontWeight="Bold" />
+      </HeaderedContentControl.Header>
+      <u:Form HorizontalAlignment="Stretch"
+              LabelAlignment="Center"
+              LabelPosition="Left"
+              LabelWidth="*">
+        <u:Form.Styles>
+          <Style Selector="ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+          </Style>
+        </u:Form.Styles>
+        <ComboBox u:FormItem.Label="串口名" ItemsSource="{Binding SerialPortNameItems}" SelectedValue="{Binding SelectedSerialPortName}" />
+        <ComboBox u:FormItem.Label="波特率" ItemsSource="{Binding BaudRatesItems}" SelectedValue="{Binding SelectedBaudRate}" />
+        <ComboBox u:FormItem.Label="校验位" ItemsSource="{Binding ParityItems}" SelectedValue="{Binding SelectedParity}" />
+        <ComboBox u:FormItem.Label="数据位" ItemsSource="{Binding DataBitsItems}" SelectedValue="{Binding SelectedDataBits}" />
+        <ComboBox u:FormItem.Label="停止位" ItemsSource="{Binding StopBitsItems}" SelectedValue="{Binding SelectedStopBits}" />
+        <ComboBox u:FormItem.Label="编码格式" ItemsSource="{Binding EncodingItems}" SelectedValue="{Binding SelectedEncoding}" />
+        <ComboBox u:FormItem.Label="握手格式" ItemsSource="{Binding HandshakeItems}" SelectedValue="{Binding SelectedHandshake}" />
+        <NumericUpDown u:FormItem.Label="发送超时"
+                       InnerRightContent="ms"
+                       Minimum="-1"
+                       Increment="1"
+                       Value="{Binding SendTimeout}" />
+        <NumericUpDown u:FormItem.Label="接收超时"
+                       InnerRightContent="ms"
+                       Minimum="-1"
+                       Increment="1"
+                       Value="{Binding ReceiveTimeout}" />
+        <NumericUpDown u:FormItem.Label="接收阈值"
+                       Minimum="1"
+                       Increment="1"
+                       InnerRightContent="byte"
+                       Value="{Binding ReceivedBytesThreshold}" />
+        <NumericUpDown u:FormItem.Label="发送缓冲"
+                       Minimum="1"
+                       InnerRightContent="byte"
+                       Value="{Binding WriteBufferSize}" />
+        <NumericUpDown u:FormItem.Label="接收缓冲"
+                       Minimum="1"
+                       InnerRightContent="byte"
+                       Value="{Binding ReadBufferSize}" />
+        <Grid u:FormItem.NoLabel="True" ColumnDefinitions="*,*">
+          <CheckBox Grid.Column="0" Content="RTS" IsChecked="{Binding IsRtsEnable}" />
+          <CheckBox Grid.Column="1" Content="DTR" IsChecked="{Binding IsDtrEnable}" />
+        </Grid>
+        <ToggleSwitch u:FormItem.Label="打开状态"
+                      Theme="{StaticResource SimpleToggleSwitch}"
+                      IsChecked="{Binding IsSerialPortOpen}"
+                      Command="{Binding ToggleSerialPortCommand}" />
+      </u:Form>
+    </HeaderedContentControl>
+    <!-- 接收区 -->
+    <HeaderedContentControl Grid.Row="0" Grid.Column="1">
+      <HeaderedContentControl.Header>
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <TextBlock VerticalAlignment="Center" Text="接收区" FontWeight="Bold" />
+          <CheckBox Content="十六进制" IsChecked="{Binding IsHexReceiveData}" />
+          <CheckBox Content="自动清空" IsChecked="{Binding IsAutoClearReceiveData}" />
+          <NumericUpDown MinWidth="132"
+                         Minimum="1"
+                         Increment="1"
+                         InnerRightContent="byte"
+                         Classes="Small"
+                         Watermark="清空阈值"
+                         Value="{Binding AutoClearReceiveDataThreshold}" />
+        </StackPanel>
+      </HeaderedContentControl.Header>
+      <Grid Margin="0,8,0,0"
+            RowDefinitions="*,Auto"
+            ColumnDefinitions="*"
+            RowSpacing="8">
+        <ScrollViewer Grid.Row="0"
+                      Margin="0,8,0,0"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+          <TextBlock VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding ReceivedDataText}" />
+        </ScrollViewer>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+          <u:PathPicker Title="选择路径" AllowMultiple="False" SelectedPathsText="{Binding SelectedSaveFilePath, Mode=OneWayToSource}" />
+          <Button Grid.Column="1" Content="保存数据" Command="{Binding SaveReceivedDataCommand}" />
+          <Button Grid.Column="2" Content="清空接收" Command="{Binding ClearReceiveDataCommand}" />
+          <ToggleButton Grid.Column="3" Content="接收数据" IsChecked="{Binding IsReceiveData}" />
+        </Grid>
+      </Grid>
+    </HeaderedContentControl>
+    <!-- 发送区 -->
+    <HeaderedContentControl Grid.Row="1" Grid.Column="1">
+      <HeaderedContentControl.Header>
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <TextBlock VerticalAlignment="Center" Text="发送区" FontWeight="Bold" />
+          <CheckBox Content="十六进制" IsChecked="{Binding IsHexSendData}" />
+          <CheckBox Content="自动发送" IsChecked="{Binding IsAutoSendData}" />
+          <NumericUpDown MinWidth="122"
+                         Classes="Small"
+                         Minimum="1"
+                         Increment="1"
+                         InnerRightContent="ms"
+                         Watermark="发送延迟"
+                         Value="{Binding AutoSendDataDelay}" />
+        </StackPanel>
+      </HeaderedContentControl.Header>
+      <Grid RowDefinitions="*,Auto" ColumnDefinitions="*" RowSpacing="8">
+        <ScrollViewer Grid.Row="0"
+                      Margin="0,8,0,0"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+          <TextBox VerticalAlignment="Stretch"
+                   Classes="TextArea"
+                   TextWrapping="Wrap"
+                   Text="{Binding SendDataText}" />
+        </ScrollViewer>
+        <Grid Grid.Row="1"
+              HorizontalAlignment="Stretch"
+              ColumnSpacing="8"
+              ColumnDefinitions="*,Auto,Auto,Auto">
+          <u:PathPicker Title="选择路径" AllowMultiple="False" SelectedPathsText="{Binding SelectedSendFilePath, Mode=OneWayToSource}" />
+          <Button Grid.Column="1" Content="发送文件" Command="{Binding SendFileCommand}" />
+          <Button Grid.Column="2" Content="清空发送" Command="{Binding ClearSendDataCommand}" />
+          <Button Grid.Column="3" Content="手动发送" Command="{Binding SendDataCommand}" />
+        </Grid>
+      </Grid>
+    </HeaderedContentControl>
+    <!-- 状态行 -->
+    <u:Form Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Stretch"
+            LabelAlignment="Center"
+            LabelPosition="Left"
+            LabelWidth="*">
+      <u:Form.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" />
+        </ItemsPanelTemplate>
+      </u:Form.ItemsPanel>
+
+      <u:Form.Styles>
+        <Style Selector="u|FormItem">
+          <Setter Property="HorizontalAlignment" Value="Center" />
+          <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+      </u:Form.Styles>
+
+      <TextBlock u:FormItem.Label="当前状态：" Text="{Binding StatusText}" />
+      <u:FormItem Label="发送计数：">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock MinWidth="36" Text="{Binding SendDataCount}" />
+          <TextBlock Text="byte" />
+        </StackPanel>
+      </u:FormItem>
+      <u:FormItem Label="接收计数：">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock MinWidth="36" Text="{Binding ReceivedDataCount}" />
+          <TextBlock Text="byte" />
+        </StackPanel>
+      </u:FormItem>
+      <u:IconButton HorizontalAlignment="Stretch"
+                    u:FormItem.NoLabel="True"
+                    Icon="{StaticResource SemiIconRefresh}"
+                    Classes="Tertiary Small"
+                    Foreground="{DynamicResource ComboBoxDropDownForeground}"
+                    Theme="{DynamicResource BorderlessIconButton}"
+                    Content="重置状态"
+                    Command="{Binding ResetStatusCommand}" />
+    </u:Form>
+  </Grid>
+</u:UrsaWindow>
