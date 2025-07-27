@@ -156,7 +156,8 @@
           <TextBox VerticalAlignment="Stretch"
                    Classes="TextArea"
                    TextWrapping="Wrap"
-                   Text="{Binding SendDataText}" />
+                   Text="{Binding SendDataText}"
+                   LostFocus="OnTxtSendDataLostFocus" />
         </ScrollViewer>
         <Grid Grid.Row="1"
               HorizontalAlignment="Stretch"
