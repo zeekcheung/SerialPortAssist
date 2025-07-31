@@ -5,6 +5,7 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:u="https://irihi.tech/ursa"
               xmlns:vm="using:SerialPortAssist.ViewModels"
+              xmlns:cv="using:SerialPortAssist.Converters"
               Title="串口助手"
               MinHeight="730"
               Padding="10,40,10,10"
@@ -20,6 +21,10 @@
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
   </u:UrsaWindow.Styles>
+
+  <u:UrsaWindow.Resources>
+    <cv:BytesToHexStringConverter x:Key="BytesToHexStringConverter" />
+  </u:UrsaWindow.Resources>
 
   <u:UrsaWindow.LeftContent>
     <StackPanel Margin="5,5,0,0" Orientation="Horizontal">
@@ -43,7 +48,7 @@
     </StackPanel>
   </u:UrsaWindow.RightContent>
 
-  <Grid RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,*">
+  <Grid RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,*,Auto">
     <!-- 串口配置 -->
     <HeaderedContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="0">
       <HeaderedContentControl.Header>
@@ -170,10 +175,36 @@
         </Grid>
       </Grid>
     </HeaderedContentControl>
+    <!-- 协议解析 -->
+    <HeaderedContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="2">
+      <HeaderedContentControl.Header>
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <TextBlock Text="协议解析" />
+          <CheckBox Content="解析接收" IsChecked="{Binding IsParseReceiveData}" />
+        </StackPanel>
+      </HeaderedContentControl.Header>
+      <u:Form LabelPosition="Top" LabelAlignment="Left" LabelWidth="*">
+        <TextBlock u:FormItem.Label="格式" Text="7F+长度+数据+CRC16" />
+        <StackPanel u:FormItem.Label="示例" Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="7F 04 31 32 33 34 D0 00" />
+          <CheckBox IsChecked="True" IsHitTestVisible="False" />
+        </StackPanel>
+        <ListBox u:FormItem.Label="结果" ItemsSource="{Binding FrameItems}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding Frame, Converter={StaticResource BytesToHexStringConverter}}" />
+                <CheckBox IsChecked="{Binding Valid}" IsHitTestVisible="False" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </u:Form>
+    </HeaderedContentControl>
     <!-- 状态行 -->
     <u:Form Grid.Row="2"
             Grid.Column="0"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             HorizontalAlignment="Stretch"
             LabelAlignment="Center"
             LabelPosition="Left"

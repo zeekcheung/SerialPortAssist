@@ -8,6 +8,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\avalonia-logo.ico</ApplicationIcon>
+    <NoWarn>IL2026,IL2104,IL3053</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -35,5 +36,8 @@
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.9" />
     <PackageReference Include="System.IO.Ports" Version="9.0.8" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Helpers\CRCFrameParser.cs" />
   </ItemGroup>
 </Project>
