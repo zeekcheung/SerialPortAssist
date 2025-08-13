@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerialPortAssist", "src\Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DA99C4E-89E3-4049-9C22-0A7EC60D83D8}"
 	ProjectSection(SolutionItems) = preProject
-		Settings.XamlStyler = Settings.XamlStyler
-		README.md = README.md
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.husky\task-runner.json = .husky\task-runner.json
 		.husky\_\.gitignore = .husky\_\.gitignore
 		.husky\_\husky.sh = .husky\_\husky.sh
+		README.md = README.md
+		Settings.XamlStyler = Settings.XamlStyler
+		.husky\task-runner.json = .husky\task-runner.json
 	EndProjectSection
 EndProject
 Global

@@ -6,6 +6,10 @@
 
 ## 功能
 
+![效果图](./docs/images/sample1.png)
+
+![效果图](./docs/images/sample2.png)
+
 ## 技术栈
 
 - [.NET 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
